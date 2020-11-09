@@ -59,6 +59,7 @@
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
         <SanitizedProjectName>teste_rafaelmatiateles</SanitizedProjectName>
+        <Custom_Styles>&quot;Amethyst Kamri|VCLSTYLE|$(BDSCOMMONDIR)\Styles\AmethystKamri.vsf&quot;</Custom_Styles>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;DataSnapServerMidas;DBXDb2Driver;DBXInterBaseDriver;vclactnband;vclFireDAC;svnui;tethering;JvGlobus;FireDACADSDriver;frxe25;JvPluginSystem;DBXMSSQLDriver;JvMM;DatasnapConnectorsFreePascal;FireDACMSSQLDriver;vcltouch;JvBands;vcldb;bindcompfmx;svn;Intraweb;DBXOracleDriver;fsIBX25;JvJans;inetdb;JvAppFrm;CEF4Delphi;JvNet;FmxTeeUI;emsedge;JvDotNetCtrls;fmx;fmxdae;frxDB25;vclib;frxTee25;JvWizards;FireDACDBXDriver;dbexpress;IndyCore;vclx;JvPageComps;dsnap;DataSnapCommon;fsTee25;JvDB;DataSnapConnectors;VCLRESTComponents;JclDeveloperTools;SampleListViewRatingsAppearancePackage;vclie;fs25;bindengine;DBXMySQLDriver;FireDACOracleDriver;FireDACMySQLDriver;DBXFirebirdDriver;JvCmp;JvHMI;FireDACCommonODBC;TInjectCollection;DataSnapClient;bindcompdbx;IndyIPCommon;JvCustom;vcl;DBXSybaseASEDriver;IndyIPServer;JvXPCtrls;IndySystem;FireDACDb2Driver;dsnapcon;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;fsADO25;TeeDB;Jcl;JvCore;emshosting;JvCrypt;FireDACPgDriver;ibmonitor;FireDACASADriver;frxADO25;DBXOdbcDriver;FireDACTDataDriver;FMXTee;DbxCommonDriver;JvDlgs;JvRuntimeDesign;ibxpress;Tee;JvManagedThreads;DataSnapServer;xmlrtl;DataSnapNativeClient;fmxobj;vclwinx;ibxbindings;rtl;FireDACDSDriver;DbxClientDriver;frx25;DBXSybaseASADriver;JvTimeFramework;CustomIPTransport;vcldsnap;JvSystem;SampleListViewMultiDetailAppearancePackage;JvStdCtrls;fsDB25;bindcomp;appanalytics;DBXInformixDriver;IndyIPClient;frxDBX25;bindcompvcl;TeeUI;JvDocking;dbxcds;VclSmp;JvPascalInterpreter;adortl;FireDACODBCDriver;JclVcl;DataSnapIndy10ServerTransport;dsnapxml;DataSnapProviderClient;dbrtl;inetdbxpress;FireDACMongoDBDriver;IndyProtocols;frxIBX25;JvControls;JvPrintPreview;JclContainers;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
@@ -112,6 +113,45 @@
             <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
+        <DCCReference Include="telas\UFormConsultaPedidos.pas">
+            <Form>FormConsultaPedidos</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="classes\uDAOConexao.pas"/>
+        <DCCReference Include="classes\uFabricaConexao.pas"/>
+        <DCCReference Include="classes\uParametrosConexao.pas"/>
+        <DCCReference Include="units\uMensagens.pas"/>
+        <DCCReference Include="units\uRotinasComuns.pas"/>
+        <DCCReference Include="classes\uPedidos.pas"/>
+        <DCCReference Include="classes\uPedidosDAO.pas"/>
+        <DCCReference Include="units\uTipos.pas"/>
+        <DCCReference Include="telas\standards\UManutencaoPadrao.pas">
+            <Form>cManuPadrao</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="telas\standards\UPequisaPadrao.pas">
+            <Form>pPesqPadrao</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="telas\UFormConsultaClientes.pas">
+            <Form>FormConsultaClientes</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="telas\UFormPedidos.pas">
+            <Form>FormPedidos</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="units\uConstantes.pas"/>
+        <DCCReference Include="dm\UDmPessoas.pas">
+            <Form>dmPessoas</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="dm\UDmProdutos.pas">
+            <Form>dmProdutos</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -140,7 +180,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Win32\Debug\teste_rafaelmatiateles.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="..\exe\teste_rafaelmatiateles.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>teste_rafaelmatiateles.exe</RemoteName>
                         <Overwrite>true</Overwrite>

@@ -29,9 +29,11 @@ create table pedidos (
  ped_dataemissao datetime not null default current_timestamp,
  ped_fkcliente int NOT NULL,
  ped_vlrtotal decimal(12,2) NOT NULL default 0,
+ ped_status char(1) not null default 'A',
  primary key(ped_numero),
  KEY `idx_ped_fkcliente` (`ped_fkcliente`),
  KEY `idx_ped_dataemissao` (`ped_dataemissao`),
+ KEY `idx_ped_status` (`ped_status`),
  CONSTRAINT `fk_pedidocliente` FOREIGN KEY (`ped_fkcliente`) REFERENCES `clientes` (`cli_codigo`) ON DELETE CASCADE
 );
 
