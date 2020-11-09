@@ -1,6 +1,6 @@
 # Sistema de Pedidos em Delphi
 Este repositório contém uma aplicação responsável para realizar o pedido de produtos.
-Esta aplicação foi desenvolvida com Delphi 10.2, com interação com o banco de dados MySQL 8.0.
+Esta aplicação foi desenvolvida com Delphi 10.2, com interação com o banco de dados MySQL 5.7.
 Esta aplicação é totalmente desktop, e sem componentes de terceiro.
 Esta é a versão 1.0, da aplicação, da qual precisa de uma grande melhoria.
 
