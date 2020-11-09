@@ -26,4 +26,3 @@ git clone https://github.com/rafamatia/venda_com_delphi
 - Data de início dos estudos: 07/11/2020
 - Estudos realizado no período de: 07/11/2020 - até o momento
 - Desenvolvimento iniciado em: 07/11/2020
-- Versão 1.0 concluída em: 08/11/2020
