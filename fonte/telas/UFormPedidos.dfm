@@ -4,8 +4,6 @@ inherited FormPedidos: TFormPedidos
   ClientWidth = 1107
   ShowHint = True
   OnShow = FormShow
-  ExplicitLeft = -228
-  ExplicitTop = -100
   ExplicitWidth = 1123
   ExplicitHeight = 624
   PixelsPerInch = 96
@@ -15,7 +13,7 @@ inherited FormPedidos: TFormPedidos
     Height = 546
     ExplicitTop = 0
     ExplicitWidth = 1107
-    ExplicitHeight = 544
+    ExplicitHeight = 546
     object pnlItensPedido: TPanel
       Left = 2
       Top = 113
@@ -24,18 +22,16 @@ inherited FormPedidos: TFormPedidos
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 1
-      ExplicitLeft = 1
-      ExplicitTop = 110
       object Label2: TLabel
-        Left = 7
-        Top = 4
+        Left = 11
+        Top = 5
         Width = 38
         Height = 13
         Caption = 'Produto'
       end
       object edtCodProduto: TEdit
-        Left = 3
-        Top = 23
+        Left = 11
+        Top = 20
         Width = 94
         Height = 21
         TabOrder = 0
@@ -43,7 +39,7 @@ inherited FormPedidos: TFormPedidos
         OnExit = edtCodProdutoExit
       end
       object btnConsultarProdutos: TBitBtn
-        Left = 103
+        Left = 105
         Top = 20
         Width = 27
         Height = 21
@@ -103,7 +99,7 @@ inherited FormPedidos: TFormPedidos
         TabOrder = 1
       end
       object edtDescProduto: TEdit
-        Left = 134
+        Left = 136
         Top = 20
         Width = 451
         Height = 21
@@ -233,15 +229,15 @@ inherited FormPedidos: TFormPedidos
       BevelOuter = bvSpace
       TabOrder = 0
       object Label1: TLabel
-        Left = 7
-        Top = 50
+        Left = 9
+        Top = 49
         Width = 33
         Height = 13
         Caption = 'Cliente'
       end
       object edtNomeDoCliente: TEdit
         Left = 134
-        Top = 66
+        Top = 64
         Width = 451
         Height = 21
         TabStop = False
@@ -284,15 +280,15 @@ inherited FormPedidos: TFormPedidos
         StyleElements = [seFont, seBorder]
       end
       object edtClientes: TEdit
-        Left = 7
-        Top = 69
+        Left = 9
+        Top = 64
         Width = 94
         Height = 21
         TabOrder = 3
         OnExit = edtClientesExit
       end
       object btnConsultarClientes: TBitBtn
-        Left = 101
+        Left = 103
         Top = 65
         Width = 27
         Height = 21
@@ -380,7 +376,6 @@ inherited FormPedidos: TFormPedidos
       Align = alClient
       Caption = 'Itens do Pedido'
       TabOrder = 2
-      ExplicitHeight = 341
       object gItensPedido: TDBGrid
         Left = 2
         Top = 15
@@ -406,10 +401,12 @@ inherited FormPedidos: TFormPedidos
     ExplicitHeight = 39
     inherited sbCancelar: TSpeedButton
       Height = 37
+      ExplicitHeight = 37
     end
     inherited sbGravar: TSpeedButton
       Height = 37
       ExplicitLeft = -5
+      ExplicitHeight = 37
     end
     object Label3: TLabel
       Left = 829
