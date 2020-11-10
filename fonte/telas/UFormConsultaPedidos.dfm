@@ -363,7 +363,7 @@ object FormConsultaPedidos: TFormConsultaPedidos
         FFFFFFFCFCFCF8F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9F9
         F9F9F9F9F9F9F9FBFBFBFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00}
       OnClick = sbAlterarClick
-      ExplicitLeft = 83
+      ExplicitLeft = 95
       ExplicitTop = 4
     end
     object sbNovo: TSpeedButton
@@ -432,7 +432,7 @@ object FormConsultaPedidos: TFormConsultaPedidos
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
       OnClick = sbNovoClick
       ExplicitLeft = 2
-      ExplicitTop = 6
+      ExplicitTop = 4
     end
     object sbCancelar: TSpeedButton
       Left = 177
@@ -664,8 +664,9 @@ object FormConsultaPedidos: TFormConsultaPedidos
         'Em Digita'#231#227'o'
         'Todos')
       TabOrder = 1
+      OnClick = rdgStatusClick
       ExplicitLeft = 470
-      ExplicitTop = -6
+      ExplicitTop = 9
     end
   end
 end

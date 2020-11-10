@@ -4,6 +4,7 @@ inherited FormPedidos: TFormPedidos
   ClientWidth = 1107
   ShowHint = True
   OnShow = FormShow
+  ExplicitTop = -83
   ExplicitWidth = 1123
   ExplicitHeight = 624
   PixelsPerInch = 96
@@ -22,6 +23,8 @@ inherited FormPedidos: TFormPedidos
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitLeft = 1
+      ExplicitTop = 108
       object Label2: TLabel
         Left = 11
         Top = 5
@@ -97,6 +100,7 @@ inherited FormPedidos: TFormPedidos
           B94E1F7C1F7C1F7C1F7C1F7C1F7C1F7C1F7C1F7C1F7CB94AB94EFB52FB521F7C
           1F7C1F7C1F7C}
         TabOrder = 1
+        OnClick = btnConsultarProdutosClick
       end
       object edtDescProduto: TEdit
         Left = 136
@@ -216,6 +220,7 @@ inherited FormPedidos: TFormPedidos
           82E88D82E8A49BEDD7D3F7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
         TabOrder = 7
         TabStop = False
+        OnClick = btnExcClick
       end
     end
     object pnlDadosPedido: TPanel
@@ -289,7 +294,7 @@ inherited FormPedidos: TFormPedidos
       end
       object btnConsultarClientes: TBitBtn
         Left = 103
-        Top = 65
+        Top = 64
         Width = 27
         Height = 21
         Hint = 'Abrir Consulta de Clientes'
@@ -376,19 +381,46 @@ inherited FormPedidos: TFormPedidos
       Align = alClient
       Caption = 'Itens do Pedido'
       TabOrder = 2
-      object gItensPedido: TDBGrid
+      object DBGrid1: TDBGrid
         Left = 2
         Top = 15
         Width = 1099
         Height = 326
         Align = alClient
-        ReadOnly = True
+        DataSource = dsItens
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnKeyDown = DBGrid1KeyDown
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'itp_fkproduto'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'pro_descricao'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'itp_quantidade'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'itp_vlrunitario'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'itp_vlrtotal'
+            Visible = True
+          end>
       end
     end
   end
@@ -401,11 +433,14 @@ inherited FormPedidos: TFormPedidos
     ExplicitHeight = 39
     inherited sbCancelar: TSpeedButton
       Height = 37
+      ExplicitLeft = 103
+      ExplicitTop = 2
       ExplicitHeight = 37
     end
     inherited sbGravar: TSpeedButton
       Height = 37
       ExplicitLeft = -5
+      ExplicitTop = 2
       ExplicitHeight = 37
     end
     object Label3: TLabel
@@ -437,5 +472,49 @@ inherited FormPedidos: TFormPedidos
       TabOrder = 0
       StyleElements = [seFont, seBorder]
     end
+  end
+  object fdmtItens: TFDMemTable
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    Left = 544
+    Top = 296
+    object fdmtItensitp_fkproduto: TIntegerField
+      DisplayLabel = 'C'#243'd. Produto'
+      FieldName = 'itp_fkproduto'
+    end
+    object fdmtItenspro_descricao: TStringField
+      DisplayLabel = 'Descri'#231#227'o do Produto'
+      FieldName = 'pro_descricao'
+      Size = 60
+    end
+    object fdmtItensitp_quantidade: TFloatField
+      DisplayLabel = 'Quantidade'
+      FieldName = 'itp_quantidade'
+      DisplayFormat = '###,###,##0.00'
+    end
+    object fdmtItensitp_vlrunitario: TFloatField
+      DisplayLabel = 'Vlr. Unit'#225'rio'
+      FieldName = 'itp_vlrunitario'
+      DisplayFormat = '###,###,##0.00'
+    end
+    object fdmtItensitp_vlrtotal: TFloatField
+      DisplayLabel = 'Vlr. Total'
+      FieldName = 'itp_vlrtotal'
+      DisplayFormat = '###,###,##0.00'
+    end
+    object fdmtItensindex: TIntegerField
+      FieldName = 'index'
+    end
+  end
+  object dsItens: TDataSource
+    AutoEdit = False
+    DataSet = fdmtItens
+    Left = 544
+    Top = 352
   end
 end

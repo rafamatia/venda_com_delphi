@@ -5,6 +5,7 @@ inherited FormConsultaClientes: TFormConsultaClientes
   PixelsPerInch = 96
   TextHeight = 13
   inherited GroupBox3: TGroupBox
+    Caption = 'Listagem de Clientes'
     inherited gPadrao: TDBGrid
       DataSource = dmPessoas.dsClientes
       OnDblClick = gPadraoDblClick
@@ -22,11 +23,13 @@ inherited FormConsultaClientes: TFormConsultaClientes
         item
           Expanded = False
           FieldName = 'cli_cidade'
+          Width = 64
           Visible = True
         end
         item
           Expanded = False
           FieldName = 'cli_uf'
+          Width = 64
           Visible = True
         end>
     end
@@ -48,6 +51,8 @@ inherited FormConsultaClientes: TFormConsultaClientes
   end
   inherited paOpcoesConsulta: TPanel
     inherited gbOpcConsulta: TGroupBox
+      ExplicitLeft = 0
+      ExplicitTop = 0
       inherited rbDescricao: TRadioButton
         Caption = 'Nome'
       end

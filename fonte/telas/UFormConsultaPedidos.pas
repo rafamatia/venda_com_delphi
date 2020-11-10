@@ -60,6 +60,7 @@ type
     procedure edDadosKeyPress(Sender: TObject; var Key: Char);
     procedure edDadosKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure rdgStatusClick(Sender: TObject);
   private
     { Private declarations }
     OPedidosDAO: TPedidoDAO;
@@ -251,6 +252,11 @@ begin
   procSelect;
 end;
 
+procedure TFormConsultaPedidos.rdgStatusClick(Sender: TObject);
+begin
+  procSelect;
+end;
+
 procedure TFormConsultaPedidos.rbCodClienteClick(Sender: TObject);
 begin
   pnlConsultaPeriodo.SendToBack;
@@ -264,6 +270,9 @@ begin
 end;
 
 procedure TFormConsultaPedidos.sbAlterarClick(Sender: TObject);
+var
+  OPedidosDAOAux: TPedidoDAO;
+  OPedido: TPedido;
 begin
   if (OPedidosDAO = nil) then
     Abort;
@@ -290,11 +299,33 @@ begin
   FormPedidos := TFormPedidos.Create(self);
   try
     FormPedidos.tspStatus := tspEmDigitacao;
+    if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag
+      [tspCancelado]) then
+    begin
+      FormPedidos.sbGravar.Enabled := False;
+      FormPedidos.pnlItensPedido.Enabled := False;
+      FormPedidos.pnlDadosPedido.Enabled := False;
+    end
+    else
+    begin
+      OPedidosDAOAux := TPedidoDAO.Create;
+      OPedido := TPedido.Create;
+      try
+        OPedido.PedNumero := OPedidosDAO.Qry.FieldByName('ped_numero')
+          .AsInteger;
+        OPedido.PedStatus := TStatusPedidoFlag[tspEmDigitacao];
+        OPedidosDAOAux.procAtualizarStatusPedido(OPedido);
+      finally
+        FreeAndNil(OPedidosDAOAux);
+        FreeAndNil(OPedido);
+      end;
+    end;
     FormPedidos.intNrPedido := OPedidosDAO.Qry.FieldByName('ped_numero')
       .AsInteger;
     FormPedidos.ShowModal;
   finally
     FreeAndNil(FormPedidos);
+    procSelect;
   end;
 end;
 
@@ -333,9 +364,9 @@ begin
   try
     OPedidosDAOAux.procExcluirPedido(OPedidosDAO.Qry.FieldByName('ped_numero')
       .AsInteger);
-    OPedidosDAO.procCarragarPedidos();
   finally
     FreeAndNil(OPedidosDAOAux);
+    procSelect;
   end;
 end;
 
@@ -347,6 +378,7 @@ begin
     FormPedidos.ShowModal;
   finally
     FreeAndNil(FormPedidos);
+    procSelect;
   end;
 end;
 
@@ -393,10 +425,11 @@ begin
     OPedido.PedNumero := OPedidosDAO.Qry.FieldByName('ped_numero').AsInteger;
     OPedido.PedStatus := TStatusPedidoFlag[tspCancelado];
     OPedidosDAOAux.procAtualizarStatusPedido(OPedido);
-    OPedidosDAO.procCarragarPedidos();
+    MensagemInformacao('Pedido cancelado com sucesso!');
   finally
     FreeAndNil(OPedidosDAOAux);
     FreeAndNil(OPedido);
+    procSelect
   end;
 end;
 

@@ -36,6 +36,9 @@ const
     =================== }
   C_SQL_PEDIDOS = ' select a.*, b.cli_nome from pedidos a ' +
     ' inner join clientes b on b.cli_codigo = a.ped_fkcliente ';
+
+  C_SQL_ITENSPEDIDO = ' select a.*, b.pro_descricao from itens_pedido a ' +
+    ' inner join produtos b on a.itp_fkproduto = b.pro_codigo ';
   { ===================
     FIM PEDIDOS
     =================== }

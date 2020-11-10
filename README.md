@@ -16,6 +16,8 @@ cd "diretorio de sua preferencia"
 git clone https://github.com/rafamatia/venda_com_delphi
 
 ## Configuração
+Suba o banco de dados MySQL;
+Para criar o banco de dados utilizar o arquivo "arquivos\scripts_criacao_de_base_e_insercao_dados_iniciais.sql";
 Para executar o projeto, é necessário configurar o arquivo "config.ini", localizado na pasta exe:
 - No arquivo "config.ini", configurar as propriedades:
 	- DATABASE= informar o schema criado. Exemplo: DATABASE=dbwktechnoloygy;
@@ -35,3 +37,4 @@ Para executar o projeto, é necessário configurar o arquivo "config.ini", local
 - Data de início dos estudos: 07/11/2020
 - Estudos realizado no período de: 07/11/2020 - até o momento
 - Desenvolvimento iniciado em: 07/11/2020
+- Desenvolvimento finalizado em: 10/11/2020 - Versão 1.0

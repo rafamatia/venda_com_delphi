@@ -21,7 +21,9 @@ uses
   UFormPedidos in 'telas\UFormPedidos.pas' {FormPedidos},
   uConstantes in 'units\uConstantes.pas',
   UDmPessoas in 'dm\UDmPessoas.pas' {dmPessoas: TDataModule},
-  UDmProdutos in 'dm\UDmProdutos.pas' {dmProdutos: TDataModule};
+  UDmProdutos in 'dm\UDmProdutos.pas' {dmProdutos: TDataModule},
+  UFormConsultaProdutos in 'telas\UFormConsultaProdutos.pas' {FormConsultaProdutos},
+  uItemPedido in 'classes\uItemPedido.pas';
 
 {$R *.res}
 
@@ -35,5 +37,6 @@ begin
   Application.CreateForm(TcManuPadrao, cManuPadrao);
   Application.CreateForm(TpPesqPadrao, pPesqPadrao);
   Application.CreateForm(TdmProdutos, dmProdutos);
+  Application.CreateForm(TFormConsultaProdutos, FormConsultaProdutos);
   Application.Run;
 end.

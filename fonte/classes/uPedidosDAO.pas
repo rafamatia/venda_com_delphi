@@ -14,13 +14,15 @@ type
     procedure procCarregarDadosDoPedido(APedido: TPedido);
     procedure procExcluirPedido(ANrPedido: Integer);
     procedure procAtualizarStatusPedido(APedido: TPedido);
+    function funcGravarPedido(APedido: TPedido): Boolean;
+    function funcAtualizarPedido(APedido: TPedido): Boolean;
   end;
 
 implementation
 
 { TPedidosDAO }
 
-uses uConstantes, uMensagens;
+uses uConstantes, uMensagens, uItemPedido;
 
 procedure TPedidoDAO.procAtualizarStatusPedido(APedido: TPedido);
 begin
@@ -32,8 +34,6 @@ begin
     Qry.ParamByName('ped_numero').AsInteger := APedido.PedNumero;
     Qry.ParamByName('ped_status').AsString := APedido.PedStatus;
     Qry.ExecSQL;
-
-    MensagemAviso('Status do Pedido Atualizado com sucesso!');
   except
     on E: Exception do
       raise Exception.Create('Erro ao atualizar o status do pedido!' +
@@ -75,6 +75,30 @@ begin
     APedido.NomeCliente := Qry.FieldByName('cli_nome').AsString;
     APedido.PedVlrTotal := Qry.FieldByName('ped_vlrtotal').AsFloat;
     APedido.PedStatus := Qry.FieldByName('ped_status').AsString;
+
+    Qry.Close;
+    Qry.SQL.Clear;
+    Qry.SQL.Text := C_SQL_ITENSPEDIDO + C_WHERE_SIMPLES +
+      'a.itp_fkpedido = :nrpedido';
+    Qry.ParamByName('nrpedido').AsInteger := APedido.PedNumero;
+    Qry.Open;
+
+    if Qry.IsEmpty then
+      Exit;
+
+    Qry.First;
+    while (not(Qry.Eof)) do
+    begin
+      APedido.AdicionarItemAoPedido(Qry.FieldByName('itp_id').AsInteger,
+        Qry.FieldByName('itp_fkpedido').AsInteger,
+        Qry.FieldByName('itp_fkproduto').AsInteger,
+        Qry.FieldByName('pro_descricao').AsString,
+        Qry.FieldByName('itp_quantidade').AsFloat,
+        Qry.FieldByName('itp_vlrunitario').AsFloat,
+        Qry.FieldByName('itp_vlrtotal').AsFloat);
+      Qry.Next;
+    end;
+
   except
     on E: Exception do
       raise Exception.Create('Erro ao carregar o pedido!' + sLineBreak +
@@ -91,11 +115,101 @@ begin
     Qry.ParamByName('nrpedido').AsInteger := ANrPedido;
     Qry.ExecSQL;
 
-    MensagemAviso('Pedido excluído com sucesso!');
+    MensagemInformacao('Pedido excluído com sucesso!');
   except
     on E: Exception do
       raise Exception.Create('Erro ao excluir o pedido!' + sLineBreak +
         sLineBreak + 'Informações Técnicas:' + sLineBreak + E.Message);
+  end;
+end;
+
+function TPedidoDAO.funcAtualizarPedido(APedido: TPedido): Boolean;
+var
+  ItemPedido: TItemPedido;
+begin
+  Result := True;
+  Qry.Close;
+  Qry.SQL.Clear;
+  try
+    Qry.SQL.Text := ' update pedidos set ' + ' ped_fkcliente = :ped_fkcliente, '
+      + ' ped_vlrtotal = :ped_vlrtotal,' + ' ped_status = ''A'' ' +
+      ' where ped_numero = :ped_numero ';
+    Qry.ParamByName('ped_numero').AsInteger := APedido.PedNumero;
+    Qry.ParamByName('ped_fkcliente').AsInteger := APedido.PedFKCliente;
+    Qry.ParamByName('ped_vlrtotal').AsFloat := APedido.PedVlrTotal;
+    Qry.ExecSQL;
+
+    for ItemPedido in APedido.ListaItensPedido do
+    begin
+      Qry.Close;
+      Qry.SQL.Clear;
+
+      if ItemPedido.ItpID = 0 then
+        Qry.SQL.Text :=
+          'insert into itens_pedido (itp_fkpedido,itp_fkproduto,itp_quantidade,itp_vlrunitario,itp_vlrtotal) '
+          + ' values(:itp_fkpedido, :itp_fkproduto, :itp_quantidade, :itp_vlrunitario, :itp_vlrtotal)'
+      else
+        Qry.SQL.Text := ' update itens_pedido set ' +
+          ' itp_fkproduto = :itp_fkproduto, ' +
+          ' itp_quantidade = :itp_quantidade, ' +
+          ' itp_vlrunitario = :itp_vlrunitario, ' +
+          ' itp_vlrtotal = :itp_vlrtotal ' +
+          ' where itp_fkpedido = :itp_fkpedido ';
+
+      Qry.ParamByName('itp_fkpedido').AsInteger := APedido.PedNumero;
+      Qry.ParamByName('itp_fkproduto').AsInteger := ItemPedido.ItpFKProduto;
+      Qry.ParamByName('itp_quantidade').AsFloat := ItemPedido.ItpQuantidade;
+      Qry.ParamByName('itp_vlrunitario').AsFloat := ItemPedido.ItpVlrUnitario;
+      Qry.ParamByName('itp_vlrtotal').AsFloat := ItemPedido.ItpVlrTotal;
+      Qry.ExecSQL;
+    end;
+
+  except
+    on E: Exception do
+    begin
+      Result := False;
+      raise Exception.Create('Erro ao alterar o pedido!' + sLineBreak +
+        sLineBreak + 'Informações Técnicas:' + sLineBreak + E.Message);
+    end;
+  end;
+end;
+
+function TPedidoDAO.funcGravarPedido(APedido: TPedido): Boolean;
+var
+  ItemPedido: TItemPedido;
+begin
+  Result := True;
+  Qry.Close;
+  Qry.SQL.Clear;
+  try
+    Qry.SQL.Text := ' INSERT INTO pedidos(ped_fkcliente,ped_vlrtotal) ' +
+      'VALUES (:ped_fkcliente,:ped_vlrtotal);';
+    Qry.ParamByName('ped_fkcliente').AsInteger := APedido.PedFKCliente;
+    Qry.ParamByName('ped_vlrtotal').AsFloat := APedido.PedVlrTotal;
+    Qry.ExecSQL;
+
+    Qry.Close;
+    Qry.SQL.Clear;
+    for ItemPedido in APedido.ListaItensPedido do
+    begin
+      Qry.SQL.Text :=
+        'insert into itens_pedido (itp_fkpedido,itp_fkproduto,itp_quantidade,itp_vlrunitario,itp_vlrtotal) '
+        + ' values(:itp_fkpedido, :itp_fkproduto, :itp_quantidade, :itp_vlrunitario, :itp_vlrtotal)';
+      Qry.ParamByName('itp_fkpedido').AsInteger := APedido.PedNumero;
+      Qry.ParamByName('itp_fkproduto').AsInteger := ItemPedido.ItpFKProduto;
+      Qry.ParamByName('itp_quantidade').AsFloat := ItemPedido.ItpQuantidade;
+      Qry.ParamByName('itp_vlrunitario').AsFloat := ItemPedido.ItpVlrUnitario;
+      Qry.ParamByName('itp_vlrtotal').AsFloat := ItemPedido.ItpVlrTotal;
+      Qry.ExecSQL;
+    end;
+
+  except
+    on E: Exception do
+    begin
+      Result := False;
+      raise Exception.Create('Erro ao gravar o pedido!' + sLineBreak +
+        sLineBreak + 'Informações Técnicas:' + sLineBreak + E.Message);
+    end;
   end;
 end;
 
