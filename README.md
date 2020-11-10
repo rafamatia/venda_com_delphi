@@ -10,16 +10,15 @@ Para executar o projeto, será necessário instalar os seguintes programas:
 - MySQL 5.7;
 
 ## Desenvolvimento
-Para iniciar o desenvolvimento, é necessário clonar o projeto do GitHub num diretório de sua preferência:
-
-cd "diretorio de sua preferencia"
-git clone https://github.com/rafamatia/venda_com_delphi
+- Para iniciar o desenvolvimento, é necessário clonar o projeto do GitHub num diretório de sua preferência:
+ - cd "diretorio de sua preferencia"
+   - git clone https://github.com/rafamatia/venda_com_delphi
 
 ## Configuração
-Suba o banco de dados MySQL;
-Para criar o banco de dados utilizar o arquivo "arquivos\scripts_criacao_de_base_e_insercao_dados_iniciais.sql";
-Para executar o projeto, é necessário configurar o arquivo "config.ini", localizado na pasta exe:
-- No arquivo "config.ini", configurar as propriedades:
+- Suba o banco de dados MySQL;
+- Para criar o banco de dados utilizar o arquivo "arquivos\scripts_criacao_de_base_e_insercao_dados_iniciais.sql";
+- Para executar o projeto, é necessário configurar o arquivo "config.ini", localizado na pasta exe:
+ - No arquivo "config.ini", configurar as propriedades:
 	- DATABASE= informar o schema criado. Exemplo: DATABASE=dbwktechnoloygy;
 	- HOSTNAME= IP onde está localizado o schema;
 	- USER_NAME= usuário do banco de dados;
