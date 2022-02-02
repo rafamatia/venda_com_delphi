@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
+  System.Classes, System.UITypes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Buttons,
   Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids, uPedidosDAO, uTipos, Vcl.WinXPickers;
 
@@ -13,7 +13,7 @@ type
     gbCamposConsulta: TGroupBox;
     GroupBox3: TGroupBox;
     gPedidos: TDBGrid;
-    Panel1: TPanel;
+    pnlBotoes: TPanel;
     sb_Sair: TSpeedButton;
     sbExcluir: TSpeedButton;
     sbAlterar: TSpeedButton;
@@ -45,8 +45,7 @@ type
     Label2: TLabel;
     procedure sb_SairClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure gPedidosDrawColumnCell(Sender: TObject; const Rect: TRect;
-      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure gPedidosDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure rbNumPedidoClick(Sender: TObject);
     procedure rbDataEmissaoClick(Sender: TObject);
     procedure rbCodClienteClick(Sender: TObject);
@@ -58,14 +57,14 @@ type
     procedure dtInicialChange(Sender: TObject);
     procedure dtFinalChange(Sender: TObject);
     procedure edDadosKeyPress(Sender: TObject; var Key: Char);
-    procedure edDadosKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure edDadosKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure rdgStatusClick(Sender: TObject);
   private
     { Private declarations }
     OPedidosDAO: TPedidoDAO;
     dsPedidos: TDataSource;
 
+    function funcRetornaTipoConsultaPedido: TTipoConsultaPedido;
     procedure procSelect;
 
   public
@@ -91,8 +90,7 @@ begin
   procSelect;
 end;
 
-procedure TFormConsultaPedidos.edDadosKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TFormConsultaPedidos.edDadosKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_RETURN then
     procSelect;
@@ -119,31 +117,50 @@ begin
   rbNumPedidoClick(Sender);
 end;
 
-procedure TFormConsultaPedidos.gPedidosDrawColumnCell(Sender: TObject;
-  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+procedure TFormConsultaPedidos.gPedidosDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
   if (Column.FieldName <> 'ped_status') then
     Exit;
 
-  if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag
-    [tspAberto]) then
+  if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspAberto]) then
   begin
     gPedidos.Canvas.Font.Color := shpStatusAberto.Brush.Color;
     gPedidos.Canvas.Brush.Color := shpStatusAberto.Brush.Color;
   end
-  else if (OPedidosDAO.Qry.FieldByName('ped_status')
-    .AsString = TStatusPedidoFlag[tspCancelado]) then
+  else if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspCancelado]) then
   begin
     gPedidos.Canvas.Font.Color := shpStatusCancelado.Brush.Color;
     gPedidos.Canvas.Brush.Color := shpStatusCancelado.Brush.Color;
   end
-  else if (OPedidosDAO.Qry.FieldByName('ped_status')
-    .AsString = TStatusPedidoFlag[tspEmDigitacao]) then
+  else if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspEmDigitacao]) then
   begin
     gPedidos.Canvas.Font.Color := shpStatusEmDigitacao.Brush.Color;
     gPedidos.Canvas.Brush.Color := shpStatusEmDigitacao.Brush.Color;
   end;
   gPedidos.DefaultDrawDataCell(Rect, gPedidos.Columns[DataCol].field, State);
+end;
+
+function TFormConsultaPedidos.funcRetornaTipoConsultaPedido: TTipoConsultaPedido;
+begin
+  if rbNumPedido.Checked then
+  begin
+    Result := tcpNrPedido;
+    Exit;
+  end;
+
+  if rbDataEmissao.Checked then
+  begin
+    Result := tcpDataEmissao;
+    Exit;
+  end;
+
+  if rbCodCliente.Checked then
+  begin
+    Result := tcpCodCliente;
+    Exit;
+  end;
+
+  Result := tcpNomeCliente;
 end;
 
 procedure TFormConsultaPedidos.procSelect;
@@ -155,66 +172,9 @@ begin
 
   strWhere := EmptyStr;
 
-  { -------------------------------------------------
-    MONTA WHERE DAS OPÇÕES DE CONSULTA
-    ------------------------------------------------- }
-  case rdgStatus.ItemIndex of
-    0:
-      strWhere := C_WHERE_SIMPLES + ' a.ped_status = ' +
-        QuotedStr(TStatusPedidoFlag[tspAberto]);
-    1:
-      strWhere := C_WHERE_SIMPLES + ' a.ped_status = ' +
-        QuotedStr(TStatusPedidoFlag[tspCancelado]);
-    2:
-      strWhere := C_WHERE_SIMPLES + ' a.ped_status = ' +
-        QuotedStr(TStatusPedidoFlag[tspEmDigitacao]);
-  end;
+  OPedidosDAO.procCarragarPedidos(TStatusPedido(rdgStatus.ItemIndex), funcRetornaTipoConsultaPedido, edDados.Text, dtInicial.Date, dtFinal.Date);
 
-  if edDados.Text <> EmptyStr then
-  Begin
-    if (rbNumPedido.Checked) then { NUMERO PEDIDO }
-    Begin
-      if (strWhere = EmptyStr) then
-        strWhere := C_WHERE_SIMPLES + ' A.ped_numero = ' + edDados.Text
-      else
-        strWhere := strWhere + ' and A.ped_numero = ' + edDados.Text;
-    End
-    else if (rbCodCliente.Checked) then { CÓD. DO CLIENTE }
-    begin
-      if (strWhere = EmptyStr) then
-        strWhere := C_WHERE_SIMPLES + ' A.ped_fkcliente = ' + edDados.Text
-      else
-        strWhere := strWhere + ' and A.ped_fkcliente = ' + edDados.Text;
-    end
-    else if (rbNomeCliente.Checked) then { NOME DO CLIENTE }
-    begin
-      if (strWhere = EmptyStr) then
-        strWhere := C_WHERE_SIMPLES + ' upper(b.CLI_NOME) LIKE ' +
-          QuotedStr('%' + edDados.Text + '%')
-      else
-        strWhere := strWhere + ' and upper(b.CLI_NOME) LIKE ' +
-          QuotedStr('%' + edDados.Text + '%');
-    end
-    else
-    begin
-      if (strWhere = EmptyStr) then
-        strWhere := C_WHERE_SIMPLES + '   (a.ped_dataemissao between ' +
-          QuotedStr(FormatDateTime('YYYY-MM-DD', dtInicial.Date)) + ' and ' +
-          QuotedStr(FormatDateTime('YYYY-MM-DD', dtFinal.Date)) + ')'
-      else
-        strWhere := strWhere + ' and ' + '   (a.ped_dataemissao between ' +
-          QuotedStr(FormatDateTime('YYYY-MM-DD', dtInicial.Date)) + ' and ' +
-          QuotedStr(FormatDateTime('YYYY-MM-DD', dtFinal.Date)) + ')';
-
-    end;
-  End;
-
-  OPedidosDAO.procCarragarPedidos(strWhere);
   procSetarFoco(edDados, False);
-
-  if (OPedidosDAO.Qry.FieldByName('ped_vlrtotal') is TBCDField) then
-    (OPedidosDAO.Qry.FieldByName('ped_vlrtotal') as TBCDField).DisplayFormat :=
-      C_MASCARA_VALOR;
 end;
 
 procedure TFormConsultaPedidos.rbNomeClienteClick(Sender: TObject);
@@ -242,6 +202,7 @@ end;
 
 procedure TFormConsultaPedidos.rbNumPedidoClick(Sender: TObject);
 begin
+  pnlBotoes.BringToFront;
   pnlConsultaPeriodo.SendToBack;
   pnlConsulta.BringToFront;
   pnlConsultaPeriodo.Visible := False;
@@ -249,6 +210,7 @@ begin
   lbTipoConsulta.Caption := rbNumPedido.Caption;
   edDados.Clear;
   edDados.SetFocus;
+
   procSelect;
 end;
 
@@ -279,28 +241,22 @@ begin
 
   if OPedidosDAO.Qry.IsEmpty then
   begin
-    MensagemAviso('Atenção, nenhum pedido foi selecionado!' + sLineBreak +
-      'Selecione um pedido para alteração e tente novamente!');
+    MensagemAviso('Atenção, nenhum pedido foi selecionado!' + sLineBreak + 'Selecione um pedido para alteração e tente novamente!');
     Abort;
   end;
 
-  if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag
-    [tspCancelado]) then
-    MensagemAviso('Atenção, pedidos cancelados não podem ser alterados!' +
-      sLineBreak + 'O pedido será aberto apenas para visualização!')
-  else if (OPedidosDAO.Qry.FieldByName('ped_status')
-    .AsString = TStatusPedidoFlag[tspEmDigitacao]) then
+  if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspCancelado]) then
+    MensagemAviso('Atenção, pedidos cancelados não podem ser alterados!' + sLineBreak + 'O pedido será aberto apenas para visualização!')
+  else if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspEmDigitacao]) then
   begin
-    MensagemAviso('Atenção, o pedido já está sendo alterado!' + sLineBreak +
-      'Selecione outro pedido e tente novamente!');
+    MensagemAviso('Atenção, o pedido já está sendo alterado!' + sLineBreak + 'Selecione outro pedido e tente novamente!');
     Abort;
   end;
 
   FormPedidos := TFormPedidos.Create(self);
   try
     FormPedidos.tspStatus := tspEmDigitacao;
-    if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag
-      [tspCancelado]) then
+    if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspCancelado]) then
     begin
       FormPedidos.sbGravar.Enabled := False;
       FormPedidos.pnlItensPedido.Enabled := False;
@@ -311,8 +267,7 @@ begin
       OPedidosDAOAux := TPedidoDAO.Create;
       OPedido := TPedido.Create;
       try
-        OPedido.PedNumero := OPedidosDAO.Qry.FieldByName('ped_numero')
-          .AsInteger;
+        OPedido.PedNumero := OPedidosDAO.Qry.FieldByName('ped_numero').AsInteger;
         OPedido.PedStatus := TStatusPedidoFlag[tspEmDigitacao];
         OPedidosDAOAux.procAtualizarStatusPedido(OPedido);
       finally
@@ -320,8 +275,7 @@ begin
         FreeAndNil(OPedido);
       end;
     end;
-    FormPedidos.intNrPedido := OPedidosDAO.Qry.FieldByName('ped_numero')
-      .AsInteger;
+    FormPedidos.intNrPedido := OPedidosDAO.Qry.FieldByName('ped_numero').AsInteger;
     FormPedidos.ShowModal;
   finally
     FreeAndNil(FormPedidos);
@@ -338,32 +292,24 @@ begin
 
   if OPedidosDAO.Qry.IsEmpty then
   begin
-    MensagemAviso('Atenção, nenhum pedido foi selecionado!' + sLineBreak +
-      'Selecione um pedido e tente novamente!');
+    MensagemAviso('Atenção, nenhum pedido foi selecionado!' + sLineBreak + 'Selecione um pedido e tente novamente!');
     Abort;
   end;
 
-  if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag
-    [tspCancelado]) then
+  if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspCancelado]) then
   begin
-    MensagemAviso('Atenção, pedidos cancelados não podem ser excluídos!' +
-      sLineBreak +
-      'Selecione um pedido com status "Aberto" e tente novamente!');
+    MensagemAviso('Atenção, pedidos cancelados não podem ser excluídos!' + sLineBreak + 'Selecione um pedido com status "Aberto" e tente novamente!');
     Abort;
   end
-  else if (OPedidosDAO.Qry.FieldByName('ped_status')
-    .AsString = TStatusPedidoFlag[tspEmDigitacao]) then
+  else if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspEmDigitacao]) then
   begin
-    MensagemAviso('Atenção, pedidos em alteração não podem ser excluídos!' +
-      sLineBreak +
-      'Selecione um pedido com status "Aberto" e tente novamente!');
+    MensagemAviso('Atenção, pedidos em alteração não podem ser excluídos!' + sLineBreak + 'Selecione um pedido com status "Aberto" e tente novamente!');
     Abort;
   end;
 
   OPedidosDAOAux := TPedidoDAO.Create;
   try
-    OPedidosDAOAux.procExcluirPedido(OPedidosDAO.Qry.FieldByName('ped_numero')
-      .AsInteger);
+    OPedidosDAOAux.procExcluirPedido(OPedidosDAO.Qry.FieldByName('ped_numero').AsInteger);
   finally
     FreeAndNil(OPedidosDAOAux);
     procSelect;
@@ -399,23 +345,18 @@ begin
 
   if OPedidosDAO.Qry.IsEmpty then
   begin
-    MensagemAviso('Atenção, nenhum pedido foi selecionado!' + sLineBreak +
-      'Selecione um pedido e tente novamente!');
+    MensagemAviso('Atenção, nenhum pedido foi selecionado!' + sLineBreak + 'Selecione um pedido e tente novamente!');
     Abort;
   end;
 
-  if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag
-    [tspCancelado]) then
+  if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspCancelado]) then
   begin
-    MensagemAviso('Atenção, pedidos já cancelados!' + sLineBreak +
-      'Selecione um pedido com o status "Aberto" e tente novamente!');
+    MensagemAviso('Atenção, pedidos já cancelados!' + sLineBreak + 'Selecione um pedido com o status "Aberto" e tente novamente!');
     Abort;
   end
-  else if (OPedidosDAO.Qry.FieldByName('ped_status')
-    .AsString = TStatusPedidoFlag[tspEmDigitacao]) then
+  else if (OPedidosDAO.Qry.FieldByName('ped_status').AsString = TStatusPedidoFlag[tspEmDigitacao]) then
   begin
-    MensagemAviso('Atenção, o pedido está sendo alterado!' + sLineBreak +
-      'Selecione um pedido com o status "Aberto" e tente novamente!');
+    MensagemAviso('Atenção, o pedido está sendo alterado!' + sLineBreak + 'Selecione um pedido com o status "Aberto" e tente novamente!');
     Abort;
   end;
 

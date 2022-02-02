@@ -2,14 +2,19 @@ unit uPedidosDAO;
 
 interface
 
-uses uDAOConexao, System.SysUtils, FireDAC.Stan.Param, System.Classes,
-  uPedidos;
+uses Data.DB, uDAOConexao, System.SysUtils, FireDAC.Stan.Param, System.Classes,
+  uPedidos, uTipos, System.StrUtils;
 
 type
   TPedidoDAO = class(TDAOConexao)
   private
+    function funcRetornaWhereStatusPedidos(AStatusPedido: TStatusPedido): String;
+    function funcRetornaWherePedido(ATipoConsultaPedido: TTipoConsultaPedido;
+      AValorConsulta: String; ADataInicial: TDateTime; ADataFinal: TDateTime): String;
+    function funcRetornaWhere: String;
   public
-    procedure procCarragarPedidos(AWhere: string = '');
+    procedure procCarragarPedidos(AStatusPedido: TStatusPedido; ATipoConsultaPedido: TTipoConsultaPedido;
+      AValorConsulta: String; ADataInicial: TDateTime; ADataFinal: TDateTime);
     procedure recuperaProximoIDDoPedido(APedido: TPedido);
     procedure procCarregarDadosDoPedido(APedido: TPedido);
     procedure procExcluirPedido(ANrPedido: Integer);
@@ -36,23 +41,99 @@ begin
     Qry.ExecSQL;
   except
     on E: Exception do
+    begin
       raise Exception.Create('Erro ao atualizar o status do pedido!' +
         sLineBreak + sLineBreak + 'Informações Técnicas:' + sLineBreak +
         E.Message);
+    end;
   end;
 end;
 
-procedure TPedidoDAO.procCarragarPedidos(AWhere: string);
+function TPedidoDAO.funcRetornaWhere: String;
 begin
+
+end;
+
+function TPedidoDAO.funcRetornaWhereStatusPedidos(AStatusPedido: TStatusPedido): String;
+begin
+  Result := EmptyStr;
+
+  if (AStatusPedido = tspTodos) then
+    Exit;
+
+  Result := C_WHERE_SIMPLES + ' a.ped_status = ' +QuotedStr(TStatusPedidoFlag[AStatusPedido]);
+end;
+
+function TPedidoDAO.funcRetornaWherePedido(ATipoConsultaPedido: TTipoConsultaPedido; AValorConsulta: String; ADataInicial,
+  ADataFinal: TDateTime): String;
+begin
+  Result := EmptyStr;
+
+  if ((ATipoConsultaPedido = tcpDataEmissao) and (ADataInicial < 0) and (ADataFinal < 0)) then
+    Exit;
+
+  if ((ATipoConsultaPedido <> tcpDataEmissao) and (AValorConsulta = EmptyStr)) then
+    Exit;
+
+  case ATipoConsultaPedido of
+    tcpNrPedido:
+    begin
+      Result := ' A.ped_numero = ' + AValorConsulta;
+    end;
+
+    tcpDataEmissao:
+    begin
+      Result := ' (a.ped_dataemissao between ' +
+        QuotedStr(FormatDateTime('YYYY-MM-DD', ADataInicial)) + ' and ' +
+        QuotedStr(FormatDateTime('YYYY-MM-DD', ADataFinal)) + ')';
+    end;
+
+    tcpCodCliente:
+    begin
+      Result :=' A.ped_fkcliente = ' + AValorConsulta;
+    end;
+
+    tcpNomeCliente:
+    begin
+      Result := ' upper(b.CLI_NOME) LIKE ' + QuotedStr('%' + AValorConsulta + '%');
+    end;
+  end;
+end;
+
+procedure TPedidoDAO.procCarragarPedidos(AStatusPedido: TStatusPedido; ATipoConsultaPedido: TTipoConsultaPedido;
+  AValorConsulta: String; ADataInicial: TDateTime; ADataFinal: TDateTime);
+var
+  strWhereStatus: String;
+  strWherePedido: String;
+  strWhere: String;
+begin
+  strWhereStatus := funcRetornaWhereStatusPedidos(AStatusPedido);
+  strWherePedido := funcRetornaWherePedido(ATipoConsultaPedido, AValorConsulta, ADataInicial, ADataFinal);
+
+  if (strWhereStatus <> EmptyStr) then
+  begin
+    strWhere := C_WHERE_SIMPLES + strWhereStatus;
+  end;
+
+  if (strWherePedido <> EmptyStr) then
+  begin
+    strWhere := IfThen((strWhere <> EmptyStr), (' and ' + strWherePedido), (C_WHERE_SIMPLES + strWherePedido));
+  end;
+
   Qry.Close;
   Qry.SQL.Clear;
   try
-    Qry.SQL.Text := C_SQL_PEDIDOS + AWhere;
+    Qry.SQL.Text := C_SQL_PEDIDOS + strWhere;
     Qry.Open;
+
+  if (Qry.FieldByName('ped_vlrtotal') is TBCDField) then
+    (Qry.FieldByName('ped_vlrtotal') as TBCDField).DisplayFormat := C_MASCARA_VALOR;
   except
     on E: Exception do
+    begin
       raise Exception.Create('Erro ao carregar os pedidos!' + sLineBreak +
         sLineBreak + 'Informações Técnicas:' + sLineBreak + E.Message);
+    end;
   end;
 end;
 
@@ -67,7 +148,9 @@ begin
     Qry.Open;
 
     if Qry.IsEmpty then
+    begin
       Exit;
+    end;
 
     APedido.PedNumero := Qry.FieldByName('ped_numero').AsInteger;
     APedido.PedDataEmissao := Qry.FieldByName('ped_dataemissao').AsDateTime;
@@ -84,7 +167,9 @@ begin
     Qry.Open;
 
     if Qry.IsEmpty then
+    begin
       Exit;
+    end;
 
     Qry.First;
     while (not(Qry.Eof)) do
@@ -101,8 +186,10 @@ begin
 
   except
     on E: Exception do
+    begin
       raise Exception.Create('Erro ao carregar o pedido!' + sLineBreak +
         sLineBreak + 'Informações Técnicas:' + sLineBreak + E.Message);
+    end;
   end;
 end;
 
@@ -118,8 +205,10 @@ begin
     MensagemInformacao('Pedido excluído com sucesso!');
   except
     on E: Exception do
+    begin
       raise Exception.Create('Erro ao excluir o pedido!' + sLineBreak +
         sLineBreak + 'Informações Técnicas:' + sLineBreak + E.Message);
+    end;
   end;
 end;
 
@@ -145,16 +234,20 @@ begin
       Qry.SQL.Clear;
 
       if ItemPedido.ItpID = 0 then
+      begin
         Qry.SQL.Text :=
           'insert into itens_pedido (itp_fkpedido,itp_fkproduto,itp_quantidade,itp_vlrunitario,itp_vlrtotal) '
           + ' values(:itp_fkpedido, :itp_fkproduto, :itp_quantidade, :itp_vlrunitario, :itp_vlrtotal)'
+      end
       else
+      begin
         Qry.SQL.Text := ' update itens_pedido set ' +
           ' itp_fkproduto = :itp_fkproduto, ' +
           ' itp_quantidade = :itp_quantidade, ' +
           ' itp_vlrunitario = :itp_vlrunitario, ' +
           ' itp_vlrtotal = :itp_vlrtotal ' +
           ' where itp_fkpedido = :itp_fkpedido ';
+      end;
 
       Qry.ParamByName('itp_fkpedido').AsInteger := APedido.PedNumero;
       Qry.ParamByName('itp_fkproduto').AsInteger := ItemPedido.ItpFKProduto;
@@ -167,7 +260,6 @@ begin
   except
     on E: Exception do
     begin
-      Result := False;
       raise Exception.Create('Erro ao alterar o pedido!' + sLineBreak +
         sLineBreak + 'Informações Técnicas:' + sLineBreak + E.Message);
     end;
@@ -206,12 +298,12 @@ begin
   except
     on E: Exception do
     begin
-      Result := False;
       raise Exception.Create('Erro ao gravar o pedido!' + sLineBreak +
         sLineBreak + 'Informações Técnicas:' + sLineBreak + E.Message);
     end;
   end;
 end;
+
 
 procedure TPedidoDAO.recuperaProximoIDDoPedido(APedido: TPedido);
 begin
@@ -227,8 +319,10 @@ begin
     APedido.PedNumero := Qry.FieldByName('auto_increment').AsInteger;
   except
     on E: Exception do
+    begin
       raise Exception.Create('Erro ao carregar os pedidos!' + sLineBreak +
         sLineBreak + 'Informações Técnicas:' + sLineBreak + E.Message);
+    end;
   end;
 end;
 

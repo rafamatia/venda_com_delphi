@@ -20,6 +20,7 @@ type
     procedure mniSairdoSistemaClick(Sender: TObject);
     procedure tmDataHoraAtualTimer(Sender: TObject);
     procedure mniConsultarPedidosClick(Sender: TObject);
+    procedure mniNovoPedidoClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -33,7 +34,7 @@ implementation
 
 {$R *.dfm}
 
-uses UFormConsultaPedidos;
+uses UFormConsultaPedidos, UFormPedidos, uTipos;
 
 procedure TFormPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -47,6 +48,17 @@ begin
     FormConsultaPedidos.ShowModal;
   finally
     FreeAndNil(FormConsultaPedidos);
+  end;
+end;
+
+procedure TFormPrincipal.mniNovoPedidoClick(Sender: TObject);
+begin
+  FormPedidos := TFormPedidos.Create(self);
+  try
+    FormPedidos.tspStatus := tspAberto;
+    FormPedidos.ShowModal;
+  finally
+    FreeAndNil(FormPedidos);
   end;
 end;
 

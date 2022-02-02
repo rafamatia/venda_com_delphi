@@ -35,8 +35,7 @@ Type
       ADescProduto: String; AQtd, AVlrUnitario, AVlrTotal: Double);
 
     procedure procCalcularTotalPedido;
-  published
-    { published declarations }
+
   end;
 
 implementation
@@ -67,7 +66,6 @@ end;
 
 destructor TPedido.Destroy;
 begin
-
   inherited;
 end;
 
@@ -77,7 +75,9 @@ var
 begin
   Self.FPedVlrTotal := 0;
   for ItemPedido in Self.FListaItensPedido do
+  begin
     Self.FPedVlrTotal := Self.FPedVlrTotal + ItemPedido.ItpVlrTotal;
+  end;
 end;
 
 end.

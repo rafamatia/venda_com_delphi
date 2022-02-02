@@ -24,6 +24,36 @@ object FormConsultaPedidos: TFormConsultaPedidos
     Align = alBottom
     Caption = 'Consultar:'
     TabOrder = 0
+    object pnlConsulta: TPanel
+      Left = 2
+      Top = 15
+      Width = 811
+      Height = 54
+      Align = alClient
+      BevelOuter = bvNone
+      TabOrder = 0
+      DesignSize = (
+        811
+        54)
+      object lbTipoConsulta: TLabel
+        Left = 6
+        Top = 8
+        Width = 33
+        Height = 13
+        Caption = 'C'#243'digo'
+      end
+      object edDados: TEdit
+        Left = 6
+        Top = 23
+        Width = 795
+        Height = 21
+        Anchors = [akLeft, akRight]
+        CharCase = ecUpperCase
+        TabOrder = 0
+        OnKeyDown = edDadosKeyDown
+        OnKeyPress = edDadosKeyPress
+      end
+    end
     object pnlConsultaPeriodo: TPanel
       Left = 2
       Top = 15
@@ -73,36 +103,6 @@ object FormConsultaPedidos: TFormConsultaPedidos
         Font.Style = []
         TabOrder = 1
         OnChange = dtInicialChange
-      end
-    end
-    object pnlConsulta: TPanel
-      Left = 2
-      Top = 15
-      Width = 811
-      Height = 54
-      Align = alClient
-      BevelOuter = bvNone
-      TabOrder = 0
-      DesignSize = (
-        811
-        54)
-      object lbTipoConsulta: TLabel
-        Left = 6
-        Top = 8
-        Width = 33
-        Height = 13
-        Caption = 'C'#243'digo'
-      end
-      object edDados: TEdit
-        Left = 6
-        Top = 23
-        Width = 795
-        Height = 21
-        Anchors = [akLeft, akRight]
-        CharCase = ecUpperCase
-        TabOrder = 0
-        OnKeyDown = edDadosKeyDown
-        OnKeyPress = edDadosKeyPress
       end
     end
   end
@@ -168,7 +168,7 @@ object FormConsultaPedidos: TFormConsultaPedidos
         end>
     end
   end
-  object Panel1: TPanel
+  object pnlBotoes: TPanel
     Left = 0
     Top = 356
     Width = 815
@@ -505,14 +505,16 @@ object FormConsultaPedidos: TFormConsultaPedidos
     object pnlEspaco1: TPanel
       Left = 377
       Top = 1
-      Width = 50
+      Width = 87
       Height = 39
       Align = alLeft
+      Alignment = taRightJustify
       BevelOuter = bvNone
+      Caption = 'Legenda:  '
       TabOrder = 0
     end
     object pnlEspaco2: TPanel
-      Left = 481
+      Left = 518
       Top = 1
       Width = 4
       Height = 39
@@ -521,7 +523,7 @@ object FormConsultaPedidos: TFormConsultaPedidos
       TabOrder = 1
     end
     object pnlEspaco3: TPanel
-      Left = 555
+      Left = 592
       Top = 1
       Width = 4
       Height = 39
@@ -530,7 +532,7 @@ object FormConsultaPedidos: TFormConsultaPedidos
       TabOrder = 2
     end
     object pnlStatusCancelado: TPanel
-      Left = 485
+      Left = 522
       Top = 1
       Width = 70
       Height = 39
@@ -552,7 +554,7 @@ object FormConsultaPedidos: TFormConsultaPedidos
       end
     end
     object pnlStatusEmDigitacao: TPanel
-      Left = 559
+      Left = 596
       Top = 1
       Width = 82
       Height = 39
@@ -573,7 +575,7 @@ object FormConsultaPedidos: TFormConsultaPedidos
       end
     end
     object pnlStatusAberto: TPanel
-      Left = 427
+      Left = 464
       Top = 1
       Width = 54
       Height = 39
@@ -612,7 +614,7 @@ object FormConsultaPedidos: TFormConsultaPedidos
       TabOrder = 0
       object rbNumPedido: TRadioButton
         Left = 7
-        Top = 17
+        Top = 18
         Width = 106
         Height = 17
         Caption = 'N'#250'mero do Pedido'
@@ -665,8 +667,6 @@ object FormConsultaPedidos: TFormConsultaPedidos
         'Todos')
       TabOrder = 1
       OnClick = rdgStatusClick
-      ExplicitLeft = 470
-      ExplicitTop = 9
     end
   end
 end

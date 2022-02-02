@@ -128,7 +128,10 @@ begin
   end;
 
   if (not(fdmtItens.Active)) then
+  begin
     fdmtItens.Active;
+  end;
+
   fdmtItens.EmptyDataSet;
 
   for ItemPedido in OPedido.ListaItensPedido do
@@ -153,15 +156,15 @@ procedure TFormPedidos.btnIncClick(Sender: TObject);
 var
   ItemPedido: TItemPedido;
 begin
-  if StrToIntDef(edtCodProduto.Text, 0) = 0 then
+  if (StrToIntDef(edtCodProduto.Text, 0) = 0) then
   begin
     MensagemAviso('É necessário informar o produto.');
     procSetarFoco(edtCodProduto, False);
     Abort;
   end;
 
-  if StrToFloatDef(StringReplace(edtSubTotalItem.Text, '.', '', [rfReplaceAll]),
-    0) = 0 then
+  if (StrToFloatDef(StringReplace(edtSubTotalItem.Text, '.', '', [rfReplaceAll]),
+    0) = 0) then
   begin
     MensagemAviso('É necessário informar o valor ao produto.');
     procSetarFoco(edtQuantidade, False);
@@ -179,9 +182,11 @@ begin
       [rfReplaceAll]), 0), StrToFloatDef(StringReplace(edtSubTotalItem.Text,
       '.', '', [rfReplaceAll]), 0));
 
-    // Percorre a lista de objetos, inserindo o valor da propriedade "Nome" do ClientDataSet
     if (not(fdmtItens.Active)) then
+    begin
       fdmtItens.Active;
+    end;
+
     fdmtItens.EmptyDataSet;
 
     for ItemPedido in OPedido.ListaItensPedido do
@@ -247,10 +252,14 @@ begin
   inherited;
 
   if (not(fdmtItens.Active)) then
+  begin
     Exit;
+  end;
 
   if (fdmtItens.RecordCount < 1) then
+  begin
     Exit;
+  end;
 
   case Key of
     VK_RETURN:
@@ -270,7 +279,9 @@ begin
       end;
 
     VK_DELETE:
+    begin
       btnExcClick(Sender);
+    end;
   end;
 end;
 
@@ -304,16 +315,18 @@ begin
   dmProdutos.qryProdutos.ParamByName('pro_codigo').AsInteger :=
     StrToIntDef(edtCodProduto.Text, 0);
   dmProdutos.qryProdutos.Open;
+
   if dmProdutos.qryProdutos.IsEmpty then
-    procInicializarCamposProduto
-  else
   begin
-    edtCodProduto.Text := dmProdutos.qryProdutospro_codigo.AsString;
-    edtDescProduto.Text := dmProdutos.qryProdutospro_descricao.AsString;
-    edtVlrUnitario.Text := FormatFloat(C_MASCARA_VALOR,
-      dmProdutos.qryProdutospro_preco_venda.AsFloat);
-    edtQuantidadeExit(Sender);
+    procInicializarCamposProduto;
+    Exit;
   end;
+
+  edtCodProduto.Text := dmProdutos.qryProdutospro_codigo.AsString;
+  edtDescProduto.Text := dmProdutos.qryProdutospro_descricao.AsString;
+  edtVlrUnitario.Text := FormatFloat(C_MASCARA_VALOR,
+    dmProdutos.qryProdutospro_preco_venda.AsFloat);
+  edtQuantidadeExit(Sender);
 end;
 
 procedure TFormPedidos.edtQuantidadeExit(Sender: TObject);
@@ -334,11 +347,18 @@ end;
 procedure TFormPedidos.edtQuantidadeKeyPress(Sender: TObject; var Key: Char);
 begin
   inherited;
-  if not(Key in ['0' .. '9', '.', ',', #8, #13]) then
+  if not (CharInSet(Key,['0' .. '9', '.', ',', #8, #13])) then
+  begin
     Key := #0;
-  if Key = FormatSettings.DecimalSeparator then
-    if pos(Key, TEdit(Sender).Text) <> 0 then
+  end;
+
+  if (Key = FormatSettings.DecimalSeparator) then
+  begin
+    if (pos(Key, TEdit(Sender).Text) <> 0) then
+    begin
       Key := #0;
+    end;
+  end;
 end;
 
 procedure TFormPedidos.FormShow(Sender: TObject);
@@ -357,7 +377,9 @@ begin
   OPedidoDAO := TPedidoDAO.Create;
 
   if (tspStatus = tspAberto) then
-    OPedidoDAO.recuperaProximoIDDoPedido(OPedido)
+  begin
+    OPedidoDAO.recuperaProximoIDDoPedido(OPedido);
+  end
   else
   begin
     OPedido.PedNumero := intNrPedido;
@@ -365,7 +387,10 @@ begin
     if (OPedido.ListaItensPedido.Count > 0) then
     begin
       if (not(fdmtItens.Active)) then
+      begin
         fdmtItens.Active;
+      end;
+
       fdmtItens.EmptyDataSet;
 
       for ItemPedido in OPedido.ListaItensPedido do
@@ -429,14 +454,14 @@ begin
   OPedido.PedFKCliente := StrToIntDef(edtClientes.Text, 0);
   OPedido.NomeCliente := edtNomeDoCliente.Text;
 
-  if OPedido.PedFKCliente = 0 then
+  if (OPedido.PedFKCliente = 0) then
   begin
     MensagemAviso('É necessário informar um cliente para o pedido.');
     procSetarFoco(edtClientes, False);
     Abort;
   end;
 
-  if OPedido.ListaItensPedido.Count < 1 then
+  if (OPedido.ListaItensPedido.Count < 1) then
   begin
     MensagemAviso('É necessário informar o(s) produto(s) para o pedido.');
     procSetarFoco(edtCodProduto, False);
@@ -450,7 +475,9 @@ begin
   begin
     if (not(Pergunta('Deseja realmente cancelar as alterações realizadas?')))
     then
+    begin
       Abort;
+    end;
 
     OPedido.PedStatus := TStatusPedidoFlag[tspAberto];
     OPedidoDAO.procAtualizarStatusPedido(OPedido);
@@ -471,8 +498,11 @@ begin
       MensagemInformacao('Pedido realizado com sucesso!');
       Close;
     end;
-  end
-  else if (tspStatus = tspEmDigitacao) then
+
+    Exit;
+  end;
+
+  if (tspStatus = tspEmDigitacao) then
   begin
     if OPedidoDAO.funcAtualizarPedido(OPedido) then
     begin
