@@ -37,3 +37,4 @@ Para executar o projeto, será necessário instalar os seguintes programas:
 - Estudos realizado no período de: 07/11/2020 - até o momento
 - Desenvolvimento iniciado em: 07/11/2020
 - Desenvolvimento finalizado em: 10/11/2020 - Versão 1.0
+- Atualização do Projeto: 02/02/2022 - Versão 1.1
